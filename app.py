@@ -1,22 +1,24 @@
 import streamlit as st 
 from PIL import Image
 import pickle
+import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import cv2
-#import tensorflow as tf
-#from keras.preprocessing import image
+import tensorflow as tf
+from keras.preprocessing import image
+import os
 from werkzeug.utils import secure_filename
 st.set_option('deprecation.showfileUploaderEncoding', False)
-#from keras.models import load_model
+from keras.models import load_model
+
 
 html_temp = """
-   <div class="" style="background-color:salmon;" >
+   <div class="" style="background-color:blue;" >
    <div class="clearfix">           
    <div class="col-md-12">
-   <center><p style="font-size:40px;color:white;margin-top:10px;">Digital Image Processing End-Term Examination</p></center> 
-   <center><p style="font-size:30px;color:white;margin-top:10px;">Ritik Banger - PIET18CS124</p></center> 
+   <center><p style="font-size:40px;color:white;margin-top:10px;">Poornima Institute of Engineering & Technology</p></center> 
+   <center><p style="font-size:30px;color:white;margin-top:10px;">Digital Image Processing lab</p></center> 
    </div>
    </div>
    </div>
@@ -24,53 +26,102 @@ html_temp = """
 st.markdown(html_temp,unsafe_allow_html=True)
   
 st.title("""
- Translation in x and y
-         """
-         )
+        Transformation
+         """)
 
+Direction = st.selectbox('Y',('X', 'Y'))
 
-img1= st.file_uploader("Please upload image 1", type=("jpg", "png"))
-option = st.selectbox('Choose Appropriate option',('Translation in x', 'Translation in y'))
+Transformation = st.selectbox('Reflection',('Shearing', 'Scaling', 'Translation', 'Reflection'))
+Y_factor = st.number_input('Insert a Y Factor',0,200)
+X_Factor = st.number_input('Insert a X Factor',0,200)
+img_T= st.file_uploader("Please upload image", type=("jpg", "png"))
 
-if img1 is None:
-  st.text("Please upload an Image 1")
-else:
-  file_bytes = np.asarray(bytearray(img1.read()), dtype=np.uint8)
-  image = cv2.imdecode(file_bytes, 1)
-  st.image(img1,caption='Uploaded Image 1', use_column_width=True)
+def import_and_predict(image_data):
+  if file is None:
+    st.text("Please upload an Image file")
+  else:
+    file_bytes = np.asarray(bytearray(file.read()), dtype=np.uint8)
+    image = cv2.imdecode(file_bytes, 1)
+    st.image(img_T,caption='Uploaded Image.', use_column_width=True)
 
-
-st.write('You selected:', option)
-
-
-from  PIL import Image, ImageOps
-def import_and_predict():
-  file_bytes1 = np.asarray(bytearray(img1.read()), dtype=np.uint8)
-  opencv_image1 = cv2.imdecode(file_bytes1, 1)
-  image = cv2.resize(opencv_image1,(300,300))
-  if option == "Translation in x":
-     M = np.float32([[1, 0, -50], [0, 1, 20], [0, 0, 1]])
-     img3 = cv2.warpPerspective(image, M, (image.shape[1], image.shape[0]))
-     st.image(img3,  use_column_width=True)
+  if Transformation == "Translation":
+    if Direction == "Y":
+      M = np.float32([[1, 0, 20], 
+                [0, 1, Y_factor], 
+                [0, 0, 1]])
+      img1 = cv.warpPerspective(image, M, (image.shape[1], image.shape[0]))
+    
+    
+  else:
+    M = np.float32([[1, 0, X_Factor], 
+                [0, 1, 100], 
+                [0, 0, 1]])
+    img1 = cv.warpPerspective(image, M, (image.shape[1], image.shape[0]))
+  plt.imshow(img1)
+  plt.show() 
+  
+  if Transformation == "Shearing":
+    rows, cols, dim = image.shape
+    if Direction == "Y":
+      M1 = np.float32([[1, Y_factor, 0],
+             	[0, 1  , 0],
+            	[0, 0  , 1]])
+      sheared_img = cv.warpPerspective(image,M1,(int(cols*1.5),int(rows*1.5)))
+     
      
   else:
-     M = np.float32([[1, 0, 150], [0, 1, 20], [0, 0, 1]])
-     img4 = cv2.warpPerspective(image, M, (image.shape[1], image.shape[0]))
-     
-     st.image(img4,  use_column_width=True)
-  return 0 
-    
-if st.button("Click To Perform Operation"):
-  result=import_and_predict()
+    M1 = np.float32([[1, 0, 0],
+             	[X_Factor, 1  , 0],
+            	[0, 0  , 1]])
+    sheared_img = cv.warpPerspective(image,M1,(int(cols*1.5),int(rows*1.5)))
+  plt.imshow(sheared_img)
+  plt.show()
   
+  
+  if Transformation == "Scaling":
+    rows, cols, dim = image.shape
+    if Direction == "Y":
+      M = np.float32([[1, 0  , 0],
+            	[0,   Y_factor, 0],
+            	[0,   0,   1]])
+      scaled_img = cv.warpPerspective(image,M,(cols,rows))
+    
+    
+  else:
+    M = np.float32([[X_Factor, 0  , 0],
+            	[0,   1, 0],
+            	[0,   0,   1]])
+    scaled_img = cv.warpPerspective(image,M,(cols,rows))
+  plt.imshow(scaled_img)
+  plt.show() 
+  
+  if Transformation == "Reflection":
+    rows, cols, dim = image.shape
+    if Direction == "Y":
+      M = np.float32([[-1,  0, cols],
+                [0, -1, rows],
+                [0,  0, 1   ]])
+      reflected_img = cv.warpPerspective(image,M,(int(cols),int(rows)))   
+  else:
+    M = np.float32([[-1,  0, cols],
+                [0, -1, rows],
+                [0,  0, 1   ]])
+    reflected_img = cv.warpPerspective(image,M,(int(cols),int(rows)))   
+  plt.imshow(reflected_img)
+  plt.show()
+  
+
+if st.button("Perform Transformation"):
+  result=import_and_predict(image)
+
 if st.button("About"):
-  st.header("Ritik Banger")
-  st.subheader("PIET18CS124, Department of Computer Engineering, PIET")
+  st.header(" Shubham Toshniwal")
+  st.subheader("Student, Department of Computer Engineering")
 html_temp = """
-   <div class="" style="background-color:white;" >
+   <div class="" style="background-color:orange;" >
    <div class="clearfix">           
    <div class="col-md-12">
-   <center><p style="font-size:20px;color:black;margin-top:10px;">Digital Image processing EndTerm Lab</p></center> 
+   <center><p style="font-size:20px;color:white;margin-top:10px;">RTU Digital Image processing Experiment</p></center> 
    </div>
    </div>
    </div>
