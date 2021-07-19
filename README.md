@@ -1,1 +1,1 @@
-# EndSemDip
+# end-term-gui
