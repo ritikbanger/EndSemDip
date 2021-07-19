@@ -34,7 +34,8 @@ Direction = st.selectbox('Y',('X', 'Y'))
 Transformation = st.selectbox('Reflection',('Shearing', 'Scaling', 'Translation', 'Reflection'))
 Y_factor = st.number_input('Insert a Y Factor',0,200)
 X_Factor = st.number_input('Insert a X Factor',0,200)
-img_T= st.file_uploader("Please upload image", type=("jpg", "png"))
+file= st.file_uploader("Please upload image", type=("jpg", "png"))
+img_T=file
 
 def import_and_predict(image_data):
   if file is None:
