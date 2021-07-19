@@ -15,8 +15,8 @@ html_temp = """
    <div class="" style="background-color:salmon;" >
    <div class="clearfix">           
    <div class="col-md-12">
-   <center><p style="font-size:40px;color:white;margin-top:10px;">Ritik Banger - PIET18CS124</p></center> 
-   <center><p style="font-size:30px;color:white;margin-top:10px;">Digital Image Processing End-Term Examination</p></center> 
+   <center><p style="font-size:40px;color:white;margin-top:10px;">Digital Image Processing End-Term Examination</p></center> 
+   <center><p style="font-size:30px;color:white;margin-top:10px;">Ritik Banger - PIET18CS124</p></center> 
    </div>
    </div>
    </div>
